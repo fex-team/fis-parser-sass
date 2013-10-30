@@ -8,8 +8,12 @@
 var sass = require('node-sass');
 
 module.exports = function(content, file, conf){
-    return sass.renderSync({
+    var opts = {
         data: content
-        [ conf ]
-    });
+    };
+    for(var i in conf){
+        opts[i] = conf[i];
+    }
+    console.log(opts);
+    return sass.renderSync(opts);
 };
