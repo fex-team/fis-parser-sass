@@ -17,6 +17,6 @@
         "test" : "mocha test/ut --recursive"
     },
     "dependencies" : {
-        "node-sass" : "0.5.2"
+        "node-sass" : ">=0.7.0"
     }
 }
