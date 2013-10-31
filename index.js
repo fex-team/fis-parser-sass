@@ -8,12 +8,7 @@
 var sass = require('node-sass');
 
 module.exports = function(content, file, conf){
-    var opts = {
-        data: content
-    };
-    for(var i in conf){
-        opts[i] = conf[i];
-    }
-    console.log(opts);
+    var opts = fis.util.clone(conf);
+    opts.data = content;
     return sass.renderSync(opts);
 };
