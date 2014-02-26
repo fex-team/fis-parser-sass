@@ -1,7 +1,5 @@
 # fis-parser-sass
 
-> **WARNING** : Node.js ``v0.10.0`` required!!!
-
 A parser plugin for fis to compile sass file.
 
 ## usage
