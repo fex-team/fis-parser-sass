@@ -1,6 +1,9 @@
 /**
- * 接管sass的@import内嵌，通过fis来内嵌，能得到更好的效果。
- * 这样不仅可以内嵌sass格式的，还可内嵌其他语法格式的css文件。
+ * 接管sass的@import内嵌，让fis-sass支持sass语法内嵌。
+ *
+ * 目前fis-sass无法改动libsass(第三方库)内部的代码以至于无法支持sass格式的文件`@import`内嵌。
+ *
+ * 所以这里接管内嵌，让fis-sass不处理`@import`内嵌代码。
  */
 var map = (function() {
     return {
@@ -12,6 +15,7 @@ var map = (function() {
     }
 })();
 
+// 匹配sass内嵌代码：@import 'xxx'
 function _process( content ) {
     var reg = /@import\s*('|")?(.+?)\1(?:;)?$/img;
     var rUrl = /^url/i;
@@ -27,20 +31,46 @@ function _process( content ) {
     });
 }
 
+// 查找文件。
 function lookup( name, ext, paths ) {
     var files = [],
         filename = name,
+        basename = filename,
+        dirname = '',
+        mapping,
         i, j, len, len2, path, info;
-
-    // 自动加后缀。
-    if ( !/\.\w+$/.exec( filename ) ) {
-        filename = name + ext;
-    }
 
     files.push( filename );
 
-    if ( !/^\_/.exec( filename ) ) {
-        files.push( '_' + filename );
+    if ( /^(.*(?:\/|\\))([^\/\\]*?)$/.exec( filename ) ) {
+        dirname = RegExp.$1;
+        basename = RegExp.$2;
+    }
+
+    // 自动加后缀。
+    if ( !/\.\w+$/.exec( basename ) ) {
+        filename = dirname + basename + ext;
+        files.push( filename );
+
+        if ( !/^_/.exec( basename ) ) {
+            filename = dirname + '_' + basename + ext;
+            files.push( filename );
+        }
+
+        mapping = {
+            '.sass': '.scss',
+            '.scss': '.sass'
+        };
+
+        if ( mapping[ ext ] ) {
+            filename = dirname + basename + mapping[ ext ];
+            files.push( filename );
+
+            if ( !/^_/.exec( basename ) ) {
+                filename = dirname + '_' + basename + mapping[ ext ];
+                files.push( filename );
+            }
+        }
     }
 
     len = files.length;
@@ -59,12 +89,13 @@ function lookup( name, ext, paths ) {
     }
 }
 
-exports.before = function( content, ext, paths ) {
+var compile = exports.before = function( content, ext, paths ) {
     return _process( content ).replace( map.reg, function( all, value ) {
         var file = lookup( value, ext, paths );
 
         if ( file ) {
-            return file.getContent();
+            // @todo 祈祷，不要循环内嵌吧。
+            return compile( file.getContent(), file.ext, [ file.dirname ].concat( paths ) );
         } else {
             fis.log.error( value + ' not found!' );
             return '';
