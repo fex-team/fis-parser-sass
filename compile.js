@@ -19,22 +19,30 @@ var map = (function() {
 })();
 
 var sass = require('fis-sass');
+var stack = {};
+var cache;
+
+function fixLineBreak( content ) {
+    return content.replace(/\r\n|\r|\n/g, '\n');
+}
 
 // 匹配scss内嵌代码：@import 'xxx';
 // @import 'xxx', 'xxx';
 function _process( content ) {
-    var reg = /@import\s([\s\S]*?)\n(?!\s+\S)/ig;
+    var reg = /((?:\/\/.*?\n)|(?:\/\*[\s\S]*?\*\/))|(?:@import\s([\s\S]*?)(?:\n|$)(?!\s+\S))/ig;
     // var reg = /@import[\s\S]*?;/ig;
     var rUrl = /^url/i;
     var rEnd = /;$/;
 
-    return content.replace( reg, function( all, value ) {
+    content = fixLineBreak( content );
+
+    return content.replace( reg, function( all, comments, value ) {
         var files;
 
-        value = value.trim().replace( rEnd, '' );
+        value = value ? value.trim().replace( rEnd, '' ) : '';
 
-        // If the @import has any media queries.
-        if ( /('|").*?\1\s+[^'"]+$/.exec(value) ) {
+        // If it's comments or If the @import has any media queries.
+        if ( comments || /('|").*?\1\s+[^'"]+$/.exec(value) ) {
             return all;
         }
 
@@ -144,9 +152,9 @@ var compile = module.exports = function( content, file, opts ) {
         content = sass.sass2scss( content );
     }
 
-    opts.data = before( content, file.ext, opts.include_paths );
+    cache = {};
+    opts.data = before( content, file.ext, unique( opts.include_paths ) );
     content = sass.renderSync( opts );
-
     content = after( content, file.ext, opts.include_paths );
 
     return content;
@@ -161,14 +169,32 @@ var before = compile.before = function( content, ext, paths ) {
             content;
 
         if ( file ) {
-            // @todo 祈祷，不要循环内嵌吧。
+
+            // 已经在堆里面了
+            if ( stack[ file.subpath ] ) {
+                fis.log.error( 'can\'t embed file ' + file.subpath + '.' );
+            }
+
+            // 如果已经引入过了，就不再引入。
+            // 类似与include_once.
+            if ( cache[ file.subpath ] ) {
+                return '';
+            }
+
+            stack[ file.subpath ] = true;
+            cache[ file.subpath ] = true;
 
             content = file.getContent();
             if ( isSassSyntax( content, file ) ) {
                 content = sass.sass2scss( content );
             }
 
-            return before( content, file.ext, [ file.dirname ].concat( paths ) );
+            content = before( content, file.ext, [ file.dirname ].concat( paths ) );
+
+            delete stack[ file.subpath ];
+
+            return content;
+
         } else {
             fis.log.error( value + ' not found!' );
             return '';
