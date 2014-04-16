@@ -18,19 +18,53 @@ var map = (function() {
     }
 })();
 
-// 匹配sass内嵌代码：@import 'xxx'
+var sass = require('fis-sass');
+
+// 匹配scss内嵌代码：@import 'xxx';
+// @import 'xxx', 'xxx';
 function _process( content ) {
-    var reg = /@import\s*('|")?(.+?)\1(?:;)?$/img;
+    var reg = /@import\s([\s\S]*?)\n(?!\s+\S)/ig;
+    // var reg = /@import[\s\S]*?;/ig;
     var rUrl = /^url/i;
+    var rEnd = /;$/;
 
-    return content.replace( reg, function( all, quote, value ) {
+    return content.replace( reg, function( all, value ) {
+        var files;
 
-        // 不处理@import url(xxx);
-        if ( value && rUrl.exec( value ) ) {
+        value = value.trim().replace( rEnd, '' );
+
+        // If the @import has any media queries.
+        if ( /('|").*?\1\s+[^'"]+$/.exec(value) ) {
             return all;
         }
 
-        return map.wrap( value );
+        files = value.split(/\s*,?\s+/m).map(function( value ) {
+            var quote = '',
+                match;
+
+            value = value.trim();
+            match = /^('|")(.*)\1$/.exec( value );
+
+            if ( match ) {
+                value = match[ 2 ];
+                quote = match[ 1 ];
+            }
+
+            // If the file’s extension is .css.
+            if ( /\.css$/i.exec( value ) ||
+
+                // If the filename begins with http://.
+                /^http/i.exec( value ) ||
+
+                // If the filename is a url().
+                /^url/i.exec( value ) ) {
+                return '@import ' + quote + value + quote + ';';
+            }
+
+            return map.wrap( value );
+        });
+
+        return files.join('\n');
     });
 }
 
@@ -90,15 +124,51 @@ function lookup( name, ext, paths ) {
             }
         }
     }
+
+    // console.log( paths, files );
 }
 
-var compile = exports.before = function( content, ext, paths ) {
+function isSassSyntax( content, file ) {
+    return file.ext === '.sass' && !~content.indexOf('{');
+}
+
+function unique( arr ) {
+    return arr.filter(function( item, index, arr ) {
+        return arr.indexOf( item ) === index;
+    });
+}
+
+var compile = module.exports = function( content, file, opts ) {
+
+    if ( isSassSyntax( content, file ) ) {
+        content = sass.sass2scss( content );
+    }
+
+    opts.data = before( content, file.ext, opts.include_paths );
+    content = sass.renderSync( opts );
+
+    content = after( content, file.ext, opts.include_paths );
+
+    return content;
+}
+
+var before = compile.before = function( content, ext, paths ) {
+
+    paths = unique( paths );
+
     return _process( content ).replace( map.reg, function( all, value ) {
-        var file = lookup( value, ext, paths );
+        var file = lookup( value, ext, paths ),
+            content;
 
         if ( file ) {
             // @todo 祈祷，不要循环内嵌吧。
-            return compile( file.getContent(), file.ext, [ file.dirname ].concat( paths ) );
+
+            content = file.getContent();
+            if ( isSassSyntax( content, file ) ) {
+                content = sass.sass2scss( content );
+            }
+
+            return before( content, file.ext, [ file.dirname ].concat( paths ) );
         } else {
             fis.log.error( value + ' not found!' );
             return '';
@@ -106,6 +176,6 @@ var compile = exports.before = function( content, ext, paths ) {
     });
 };
 
-exports.after = function( content, ext, paths ) {
+var after = compile.after = function( content, ext, paths ) {
     return content;
 };

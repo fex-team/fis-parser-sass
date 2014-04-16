@@ -5,9 +5,10 @@
 
 'use strict';
 
-var sass = require('fis-sass');
+
 var root = fis.project.getProjectPath();
 var compile = require('./compile.js');
+var path = require('path');
 
 module.exports = function(content, file, conf){
     var opts = fis.util.clone(conf);
@@ -15,9 +16,9 @@ module.exports = function(content, file, conf){
     opts.include_paths = conf.include_paths || [ root ];
     opts.include_paths.unshift( file.dirname );
 
-    opts.data = compile.before( content, file.ext, opts.include_paths );
-    content = sass.renderSync( opts );
-    content = compile.after( content, file.ext, opts.include_paths );
+    opts.include_paths = opts.include_paths.map(function( dir ) {
+        return path.resolve( dir );
+    });
 
-    return content;
+    return compile( content, file, opts );
 };
