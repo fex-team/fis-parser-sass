@@ -171,18 +171,18 @@ var before = compile.before = function( content, ext, paths ) {
         if ( file ) {
 
             // 已经在堆里面了
-            if ( stack[ file.subpath ] ) {
-                fis.log.error( 'can\'t embed file ' + file.subpath + '.' );
+            if ( stack[ file.realpath ] ) {
+                fis.log.error( 'can\'t embed file ' + file.basename + '.' );
             }
 
             // 如果已经引入过了，就不再引入。
             // 类似与include_once.
-            if ( cache[ file.subpath ] ) {
+            if ( cache[ file.realpath ] ) {
                 return '';
             }
 
-            stack[ file.subpath ] = true;
-            cache[ file.subpath ] = true;
+            stack[ file.realpath ] = true;
+            cache[ file.realpath ] = true;
 
             content = file.getContent();
             if ( isSassSyntax( content, file ) ) {
@@ -191,7 +191,7 @@ var before = compile.before = function( content, ext, paths ) {
 
             content = before( content, file.ext, [ file.dirname ].concat( paths ) );
 
-            delete stack[ file.subpath ];
+            delete stack[ file.realpath ];
 
             return content;
 
