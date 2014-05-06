@@ -17,6 +17,6 @@
         "test" : "mocha test/ut --recursive"
     },
     "dependencies" : {
-        "fis-sass" : "0.1.13"
+        "fis-sass" : "0.1.14"
     }
 }
