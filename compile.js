@@ -183,7 +183,11 @@ var before = compile.before = function( content, currentFile, paths) {
                 return '';
             }
 
-            currentFile.cache.addDeps(file.realpath);
+            // 有可能当前文件并没有经过 fis 的compile，以至于没有 cahce 对象。
+            if (currentFile.cache) {
+                currentFile.cache.addDeps(file.realpath);
+            }
+
             stack[ file.realpath ] = true;
             cache[ file.realpath ] = true;
 
