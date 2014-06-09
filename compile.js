@@ -15,7 +15,7 @@ var map = (function() {
         wrap: function( value ) {
             return '/*embed:' + value + '*/';
         }
-    }
+    };
 })();
 
 var sass = require('fis-sass');
@@ -192,7 +192,7 @@ var before = compile.before = function( content, currentFile, paths) {
                 content = sass.sass2scss( content );
             }
 
-            content = before( content, file.ext, [ file.dirname ].concat( paths ) );
+            content = before( content, file, [ file.dirname ].concat( paths ) );
 
             delete stack[ file.realpath ];
 
