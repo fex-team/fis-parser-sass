@@ -15,7 +15,7 @@ var map = (function() {
         wrap: function( value ) {
             return '/*embed:' + value + '*/';
         }
-    }
+    };
 })();
 
 var sass = require('fis-sass');
@@ -153,14 +153,16 @@ var compile = module.exports = function( content, file, opts ) {
     }
 
     cache = {};
-    opts.data = before( content, file.ext, unique( opts.include_paths ) );
+    opts.data = before( content, file, unique( opts.include_paths ) );
     content = sass.renderSync( opts );
-    content = after( content, file.ext, opts.include_paths );
+    content = after( content, file, opts.include_paths );
 
     return content;
-}
+};
 
-var before = compile.before = function( content, ext, paths ) {
+var before = compile.before = function( content, currentFile, paths) {
+
+    var ext = currentFile.ext;
 
     paths = unique( paths );
 
@@ -181,6 +183,7 @@ var before = compile.before = function( content, ext, paths ) {
                 return '';
             }
 
+            currentFile.cache.addDeps(file.realpath);
             stack[ file.realpath ] = true;
             cache[ file.realpath ] = true;
 
@@ -189,7 +192,7 @@ var before = compile.before = function( content, ext, paths ) {
                 content = sass.sass2scss( content );
             }
 
-            content = before( content, file.ext, [ file.dirname ].concat( paths ) );
+            content = before( content, file, [ file.dirname ].concat( paths ) );
 
             delete stack[ file.realpath ];
 
@@ -202,6 +205,6 @@ var before = compile.before = function( content, ext, paths ) {
     });
 };
 
-var after = compile.after = function( content, ext, paths ) {
+var after = compile.after = function( content, currentFile, paths ) {
     return content;
 };
