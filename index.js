@@ -7,10 +7,10 @@
 
 
 var root = fis.project.getProjectPath();
-var sass = require('fis-sass');
+// var sass = require('fis-sass');
 var path = require('path');
 
-// var compile = require('./compile.js');
+var compile = require('./compile.js');
 
 module.exports = function(content, file, conf){
     var opts = fis.util.clone(conf);
@@ -22,13 +22,13 @@ module.exports = function(content, file, conf){
         return path.resolve( dir );
     });
 
-    opts.data = content;
+    // opts.data = content;
 
-    if (file.ext === '.sass') {
-        opts.sassSyntax = true;
-    }
+    // if (file.ext === '.sass') {
+    //     opts.sassSyntax = true;
+    // }
 
-    return sass.renderSync(opts);
+    // return sass.renderSync(opts);
 
-    // return compile( content, file, opts );
+    return compile( content, file, opts );
 };

@@ -1,12 +1,5 @@
 /**
- * 接管sass的@import内嵌，让fis-sass支持sass语法内嵌。
- *
- * 目前fis-sass无法改动libsass(第三方库)内部的代码以至于无法支持sass格式的文件`@import`内嵌。
- *
- * 所以这里接管内嵌，绕过fis-sass处理`@import`内嵌过程。
- *
- * 目前fis-sass的是sass语法支持，主要是用了[sass2scss](https://github.com/mgreter/sass2scss)库，
- * 目前只有程序的最外成入口处调用了这个功能，libsass的内联file读取没有经过这一过程，所以这个功能是不完美支持sass语法的。
+ * 接管sass的@import内嵌, 主要用来解决 编译缓存依赖问题。
  */
 var map = (function() {
     return {
@@ -137,7 +130,7 @@ function lookup( name, ext, paths ) {
 }
 
 function isSassSyntax( content, file ) {
-    return file.ext === '.sass' && !~content.indexOf('{');
+    return file.ext === '.sass'/* && !~content.indexOf('{')*/;
 }
 
 function unique( arr ) {
