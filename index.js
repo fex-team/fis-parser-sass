@@ -7,8 +7,10 @@
 
 
 var root = fis.project.getProjectPath();
-var compile = require('./compile.js');
+var sass = require('fis-sass');
 var path = require('path');
+
+// var compile = require('./compile.js');
 
 module.exports = function(content, file, conf){
     var opts = fis.util.clone(conf);
@@ -20,5 +22,13 @@ module.exports = function(content, file, conf){
         return path.resolve( dir );
     });
 
-    return compile( content, file, opts );
+    opts.data = content;
+
+    if (file.ext === '.sass') {
+        opts.sassSyntax = true;
+    }
+
+    return sass.renderSync(opts);
+
+    // return compile( content, file, opts );
 };
