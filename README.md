@@ -1,4 +1,41 @@
-#在项目中使用sass和compass
+fis-parser-sass
+============================
+
+## 安装与使用 
+
+全局安装
+
+```bash
+npm install fis-parser-sass -g
+```
+
+开启插件
+
+```
+fis.config.merge('modules.parser', {}
+    sass : 'sass',
+    scss: 'sass'
+);
+
+fis.config.merge('roadmap.ext', {
+    sass: 'css',
+    scss: 'css'
+});
+```
+
+插件配置
+
+```
+fis.config.set('settings.parser.sass', {
+    // 加入文件查找目录
+    include_paths: []
+});
+```
+
+
+
+
+## 在项目中使用sass和compass
 
 有了 ``fis-parser-sass`` 就可用用compass了，方法如下：
 
