@@ -12,10 +12,10 @@ npm install fis-parser-sass -g
 开启插件
 
 ```javascript
-fis.config.merge('modules.parser', {}
+fis.config.merge('modules.parser', {
     sass : 'sass',
     scss: 'sass'
-);
+});
 
 fis.config.merge('roadmap.ext', {
     sass: 'css',
