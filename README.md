@@ -11,7 +11,7 @@ npm install fis-parser-sass -g
 
 开启插件
 
-```
+```javascript
 fis.config.merge('modules.parser', {}
     sass : 'sass',
     scss: 'sass'
@@ -25,7 +25,7 @@ fis.config.merge('roadmap.ext', {
 
 插件配置
 
-```
+```javascript
 fis.config.set('settings.parser.sass', {
     // 加入文件查找目录
     include_paths: []
