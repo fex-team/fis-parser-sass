@@ -45,7 +45,7 @@ fis.config.set('settings.parser.sass', {
     npm install -g fis-parser-sass
     ```
 
-1. 下载 [compass](https://github.com/chriseppstein/compass) 框架，把框架中的 ``frameworks/compass/stylesheets`` 目录下的文件放到你的项目中，得到目录结构：
+1. 下载 [compass](https://github.com/Igosuki/compass-mixins) 框架，把框架中的 ``frameworks/compass/stylesheets`` 目录下的文件放到你的项目中，得到目录结构：
 
     ```
     project
