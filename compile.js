@@ -13,7 +13,7 @@ var map = (function() {
 
 var sass = require('fis-sass');
 var stack = {};
-var cache;
+var required;
 
 function fixLineBreak( content ) {
     return content.replace(/\r\n|\r|\n/g, '\n');
@@ -86,7 +86,7 @@ function lookup( name, ext, paths ) {
     }
 
     // 自动加后缀。
-    if ( !/\.\w+$/.exec( basename ) ) {
+    if ( !/\.(scss|sass)$/.exec( basename ) ) {
         filename = dirname + basename + ext;
         files.push( filename );
 
@@ -145,9 +145,13 @@ var compile = module.exports = function( content, file, opts ) {
         content = sass.sass2scss( content );
     }
 
-    cache = {};
+    required = {};
     opts.data = before( content, file, unique( opts.include_paths ) );
-    content = sass.renderSync( opts );
+    try {
+        content = sass.renderSync( opts );
+    } catch (ex) {
+        fis.log.error(ex);
+    }
     content = after( content, file, opts.include_paths );
 
     return content;
@@ -155,11 +159,13 @@ var compile = module.exports = function( content, file, opts ) {
 
 var before = compile.before = function( content, currentFile, paths) {
 
+    // @todo use cache of this progress.
     var ext = currentFile.ext;
 
     paths = unique( paths );
 
     return _process( content ).replace( map.reg, function( all, value ) {
+
         var file = lookup( value, ext, paths ),
             content;
 
@@ -172,7 +178,7 @@ var before = compile.before = function( content, currentFile, paths) {
 
             // 如果已经引入过了，就不再引入。
             // 类似与include_once.
-            if ( cache[ file.realpath ] ) {
+            if ( required[ file.realpath ] ) {
                 return '';
             }
 
@@ -182,7 +188,7 @@ var before = compile.before = function( content, currentFile, paths) {
             }
 
             stack[ file.realpath ] = true;
-            cache[ file.realpath ] = true;
+            required[ file.realpath ] = true;
 
             content = file.getContent();
             if ( isSassSyntax( content, file ) ) {
