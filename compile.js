@@ -19,6 +19,15 @@ function fixLineBreak( content ) {
     return content.replace(/\r\n|\r|\n/g, '\n');
 }
 
+function isEmpty(obj) {
+    if (obj) {
+        for (var key in obj) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // 匹配scss内嵌代码：@import 'xxx';
 // @import 'xxx', 'xxx';
 function _process( content ) {
@@ -208,6 +217,17 @@ var before = compile.before = function( content, currentFile, paths) {
     });
 };
 
-var after = compile.after = function( content, currentFile, paths ) {
-    return content;
+var after = compile.after = function( content, file, paths ) {
+    // 处理，解决资源引用路径问题。
+    content = fis.compile.extCss(content);
+
+    return content.replace(fis.compile.lang.reg, function(all, type, value) {
+        var info = fis.uri(value, file.dirname);
+
+        if (info.file) {
+            value = info.quote + info.file.subpath + info.query + info.quote;
+        }
+
+        return value;
+    });
 };
