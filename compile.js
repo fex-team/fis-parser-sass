@@ -205,6 +205,7 @@ var before = compile.before = function( content, currentFile, paths) {
             }
 
             content = before( content, file, [ file.dirname ].concat( paths ) );
+            content = fixPath(content, file);
 
             delete stack[ file.realpath ];
 
@@ -218,16 +219,25 @@ var before = compile.before = function( content, currentFile, paths) {
 };
 
 var after = compile.after = function( content, file, paths ) {
+    return content;
+};
+
+var fixPath = compile.fixPath = function(content, file) {
     // 处理，解决资源引用路径问题。
     content = fis.compile.extCss(content);
 
     return content.replace(fis.compile.lang.reg, function(all, type, value) {
+
         var info = fis.uri(value, file.dirname);
 
         if (info.file) {
             value = info.quote + info.file.subpath + info.query + info.quote;
         }
 
+        if (type === 'embed' || type === 'jsEmbed') {
+            value = fis.compile.lang[type].ld + value + fis.compile.lang[type].rd;
+        }
+
         return value;
     });
-};
+}
