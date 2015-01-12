@@ -19,7 +19,7 @@ module.exports = function(content, file, conf){
     opts.include_paths.unshift( file.dirname );
 
     opts.include_paths = opts.include_paths.map(function( dir ) {
-        if (dir[0] !== '/') {
+        if (path.resolve( dir ) != path.normalize( dir )) {
             dir = path.join(root, dir);
         }
         return path.resolve( dir );
