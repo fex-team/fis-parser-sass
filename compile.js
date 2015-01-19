@@ -31,7 +31,7 @@ function isEmpty(obj) {
 // 匹配scss内嵌代码：@import 'xxx';
 // @import 'xxx', 'xxx';
 function _process( content ) {
-    var reg = /((?:\/\/.*?\n)|(?:\/\*[\s\S]*?\*\/))|(?:@import\s([\s\S]*?)(?:\n|$)(?!\s+[^{]*\n))/ig;
+    var reg = /((?:\/\/.*?\n)|(?:\/\*[\s\S]*?\*\/))|(?:@import\s([\s\S]*?)(?:\n|$)(?!\s+[^{@]*\n))/ig;
     // var reg = /@import[\s\S]*?;/ig;
     var rUrl = /^url/i;
     var rEnd = /;$/;
