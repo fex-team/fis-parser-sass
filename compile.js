@@ -155,13 +155,13 @@ var compile = module.exports = function( content, file, opts ) {
     }
 
     required = {};
-    opts.data = before( content, file, unique( opts.include_paths ) );
+    opts.data = before( content, file, unique( opts.includePaths ) );
     try {
         content = sass.renderSync( opts );
     } catch (ex) {
         fis.log.error(ex);
     }
-    content = after( content, file, opts.include_paths );
+    content = after( content, file, opts.includePaths );
 
     return content;
 };

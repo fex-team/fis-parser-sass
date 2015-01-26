@@ -6,32 +6,182 @@
 'use strict';
 
 
-var root = fis.project.getProjectPath();
-// var sass = require('fis-sass');
 var path = require('path');
+var sass = require('fis-sass');
+var root;
 
-var compile = require('./compile.js');
+function resolve_and_load(filename, dir) {
+    // Resolution order for ambiguous imports:
+    // (1) filename as given
+    // (2) underscore + given
+    // (3) underscore + given + extension
+    // (4) given + extension
+    //
+
+    var basename = path.basename(filename);
+    var dirname = path.dirname(filename);
+    var files = [];
+
+    files.push(path.join(dirname, basename));
+    files.push(path.join(dirname, '_' + basename));
+    files.push(path.join(dirname, '_' + basename + '.scss'));
+    files.push(path.join(dirname, '_' + basename + '.sass'));
+    files.push(path.join(dirname, basename + '.scss'));
+    files.push(path.join(dirname, basename + '.sass'));
+
+    var found = null;
+
+    files.every(function(url) {
+        var info = fis.uri(url, dir);
+
+        if( info.file && info.file.isFile() ) {
+            found = info.file;
+            return false;
+        }
+
+        return true;
+    });
+
+    return found;
+}
+
+function find(filename, paths) {
+    var found = null;
+
+    paths.every(function(dir) {
+        var file;
+
+        if ((file = resolve_and_load(filename, dir))) {
+            found = file;
+            return false;
+        }
+
+        return true;
+    });
+
+    return found;
+}
+
+function fixSourcePath(content, file) {
+    // 处理，解决资源引用路径问题。
+    content = fis.compile.extCss(content);
+
+    return content.replace(fis.compile.lang.reg, function(all, type, value) {
+
+        var info = fis.uri(value, file.dirname);
+
+        if (info.file) {
+            value = info.quote + info.file.subpath + info.query + info.quote;
+        }
+
+        if (type === 'embed' || type === 'jsEmbed') {
+            value = fis.compile.lang[type].ld + value + fis.compile.lang[type].rd;
+        }
+
+        return value;
+    });
+}
 
 module.exports = function(content, file, conf){
+    root = root || fis.project.getProjectPath();
     var opts = fis.util.clone(conf);
 
-    opts.include_paths = conf.include_paths || [ root ];
-    opts.include_paths.unshift( file.dirname );
+    // 读取私有配置。
+    if (file.sass) {
+        fis.util.map(fis.sass, opts, true);
+    }
 
-    opts.include_paths = opts.include_paths.map(function( dir ) {
+    opts.includePaths = opts.include_paths || opts.includePaths || [];
+    file.dirname !== root && opts.includePaths.unshift(file.dirname);
+    opts.includePaths.push(root);
+
+    opts.includePaths = opts.includePaths.map(function( dir ) {
+
         if (path.resolve( dir ) != path.normalize( dir )) {
             dir = path.join(root, dir);
         }
-        return path.resolve( dir );
+
+        return dir;
     });
 
-    // opts.data = content;
+    opts.file = file.subpath;
+    opts.data = content;
 
-    // if (file.ext === '.sass') {
-    //     opts.sassSyntax = true;
+    var includePaths = opts.includePaths;
+    var sources = [file.subpath];
+    opts.importer = function(url, prev, done) {
+
+        var prevFile = find(prev, includePaths);
+
+        if (!prevFile) {
+            throw new Error('Error');
+        }
+
+        var target = find(url, [prevFile.dirname].concat(includePaths));
+
+        if (!target) {
+            throw new Error('Can\'t find `' + url +'` in `' + prev + '`');
+        }
+
+        var content = target.getContent();
+        content = fixSourcePath(content, target);
+
+        if (file.cache) {
+            file.cache.addDeps(target.realpath);
+        }
+
+        ~sources.indexOf(target.subpath) || sources.push(target.subpath);
+
+        done({
+            file: target.subpath,
+            contents: content
+        });
+    };
+
+    if (opts.sourceMap) {
+        var mapping = fis.file.wrap(file.dirname + '/' + file.filename + file.rExt + '.map');
+
+        mapping.useDomain = true;
+        mapping.useHash = true;
+
+        opts.sourceMap = mapping.getUrl(fis.compile.settings.hash, fis.compile.settings.domain);
+        opts.outFile = file.getUrl(fis.compile.settings.hash, fis.compile.settings.domain);
+    }
+
+    var ret = sass.renderSync(opts);
+
+    // if (file.cache && ret.stats.includedFiles.length) {
+    //     ret.stats.includedFiles.forEach(function(dep) {
+    //         file.cache.addDeps(dep);
+    //     });
     // }
 
-    // return sass.renderSync(opts);
+    if (mapping) {
+        var sourceMap = ret.sourceMap;
 
-    return compile( content, file, opts );
+        // 修复 sourceMap 中文件路径错误问题
+        // 等 node-sass 修复后，可以删除。
+        // ---------------------------------------------
+        var sourceMapObj = JSON.parse(sourceMap);
+        sourceMapObj.sources = sources;
+        sourceMap = JSON.stringify(sourceMapObj, null, 4);
+        // -----------------------------------------------
+
+
+        mapping.setContent(sourceMap);
+
+        file.extras = file.extras || {};
+        file.extras.derived = file.extras.derived || [];
+        file.extras.derived.push(mapping);
+    }
+
+    return ret.css;
+};
+
+module.exports.defaultOptions = {
+    outputStyle: 'nested',
+    sourceMapContents: true,
+    sourceMap: true,
+    omitSourceMapUrl: false,
+    // sourceComments: true
 };

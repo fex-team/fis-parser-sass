@@ -1,0 +1,17 @@
+{
+    "version": 3,
+    "file": "index.css",
+    "sources": [
+        "/index.scss",
+        "/_import.scss",
+        "/subdir/_import2.scss"
+    ],
+    "sourcesContent": [
+        "@import \"import\";\n@import \"subdir/import2\";\n\n#navbar {\n  width: 80%;\n  height: 23px;\n}\n\n#navbar ul {\n  list-style-type: none;\n}\n\n#navbar li {\n  float: left;\n\n  a {\n    font-weight: bold;\n  }\n}\n",
+        "#foot {\n  width: 80%;\n  height: 23px;\n}\n\n#foot ul {\n  list-style-type: none;\n}\n\n#foot li {\n  float: left;\n\n  a {\n    font-weight: bold;\n  }\n}\n",
+        "@import '../import';\n\n\n#foot {\n  width: 80%;\n  height: 23px;\n}\n\n#foot ul {\n  list-style-type: none;\n}\n\n#foot li {\n  float: left;\n\n  a {\n    font-weight: bold;\n  }\n\n  background: url('/subdir/image.png');\n}\n",
+        "#foot {\n  width: 80%;\n  height: 23px;\n}\n\n#foot ul {\n  list-style-type: none;\n}\n\n#foot li {\n  float: left;\n\n  a {\n    font-weight: bold;\n  }\n}\n"
+    ],
+    "mappings": "AGAA;EACE,AAAO;EACP,AAAQ;;AAGV,AAAM;EACJ,AAAiB;;AAGnB,AAAM;EACJ,AAAO;EAET,AAAM,AAAG;IACL,AAAa;;AAbjB;EACE,AAAO;EACP,AAAQ;;AAGV,AAAM;EACJ,AAAiB;;AAGnB,AAAM;EACJ,AAAO;EAET,AAAM,AAAG;IACL,AAAa;;ADVjB;EACE,AAAO;EACP,AAAQ;;AAGV,AAAM;EACJ,AAAiB;;AAGnB,AAAM;EACJ,AAAO;EAMP,AAAY;EAJd,AAAM,AAAG;IACL,AAAa;;AFbjB;EACE,AAAO;EACP,AAAQ;;AAGV,AAAQ;EACN,AAAiB;;AAGnB,AAAQ;EACN,AAAO;EAET,AAAQ,AAAG;IACP,AAAa",
+    "names": []
+}

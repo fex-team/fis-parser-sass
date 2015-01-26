@@ -1,0 +1,15 @@
+{
+    "res": {
+        "index.scss": {
+            "uri": "/index.css",
+            "type": "css",
+            "extras": {}
+        },
+        "test.scss": {
+            "uri": "/test.css",
+            "type": "css",
+            "extras": {}
+        }
+    },
+    "pkg": {}
+}

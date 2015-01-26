@@ -1,0 +1,16 @@
+#foot {
+  width: 80%;
+  height: 23px;
+}
+
+#foot ul {
+  list-style-type: none;
+}
+
+#foot li {
+  float: left;
+
+  a {
+    font-weight: bold;
+  }
+}

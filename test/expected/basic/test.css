@@ -1,0 +1,38 @@
+#foot {
+  width: 80%;
+  height: 23px; }
+
+#foot ul {
+  list-style-type: none; }
+
+#foot li {
+  float: left; }
+  #foot li a {
+    font-weight: bold; }
+
+#foot {
+  width: 80%;
+  height: 23px; }
+
+#foot ul {
+  list-style-type: none; }
+
+#foot li {
+  float: left;
+  background: url('/subdir/image.png'); }
+  #foot li a {
+    font-weight: bold; }
+
+#navbar {
+  width: 80%;
+  height: 23px; }
+
+#navbar ul {
+  list-style-type: none; }
+
+#navbar li {
+  float: left; }
+  #navbar li a {
+    font-weight: bold; }
+
+/*# sourceMappingURL=test.css.map */
