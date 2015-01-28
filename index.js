@@ -8,6 +8,7 @@
 
 var path = require('path');
 var sass = require('fis-sass');
+var util = require('util');
 var root;
 
 function resolve_and_load(filename, dir) {
@@ -148,7 +149,14 @@ module.exports = function(content, file, conf){
         opts.outFile = file.getUrl(fis.compile.settings.hash, fis.compile.settings.domain);
     }
 
-    var ret = sass.renderSync(opts);
+    var ret;
+    try {
+        ret = sass.renderSync(opts);
+    } catch (e) {
+        e = JSON.parse(e);
+        fis.log.error(util.format("%s".red + " [`%s` %s:%s]".yellow, e.message, e.file, e.line, e.column));
+    }
+
 
     // if (file.cache && ret.stats.includedFiles.length) {
     //     ret.stats.includedFiles.forEach(function(dep) {
