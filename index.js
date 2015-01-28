@@ -143,7 +143,7 @@ module.exports = function(content, file, conf){
         var mapping = fis.file.wrap(file.dirname + '/' + file.filename + file.rExt + '.map');
 
         mapping.useDomain = true;
-        mapping.useHash = true;
+        mapping.useHash = false;
 
         opts.sourceMap = mapping.getUrl(fis.compile.settings.hash, fis.compile.settings.domain);
         opts.outFile = file.getUrl(fis.compile.settings.hash, fis.compile.settings.domain);
