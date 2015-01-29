@@ -84,6 +84,12 @@ function fixSourcePath(content, file) {
 }
 
 module.exports = function(content, file, conf){
+
+    // 不处理空文件，处理空文件有人反馈报错。
+    if (!content || !content.trim()) {
+        return content;
+    }
+
     root = root || fis.project.getProjectPath();
     var opts = fis.util.clone(conf);
 
