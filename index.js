@@ -83,12 +83,27 @@ function fixSourcePath(content, file) {
     });
 }
 
+function fixImport(content) {
+    var reg = /((?:\/\/.*?\n)|(?:\/\*[\s\S]*?\*\/))|(?:@import\s([\s\S]*?)(?:\n|$)(?!\s+[^{@]*\n))/ig;
+
+    return content.replace(reg, function(all, comments, value) {
+
+        if (!comments && value && !/;$/.test(value)) {
+            all += ';';
+        }
+
+        return all;
+    });
+}
+
 module.exports = function(content, file, conf){
 
     // 不处理空文件，处理空文件有人反馈报错。
     if (!content || !content.trim()) {
         return content;
     }
+
+    content = fixImport(content);
 
     root = root || fis.project.getProjectPath();
     var opts = fis.util.clone(conf);
@@ -152,7 +167,7 @@ module.exports = function(content, file, conf){
         mapping.useHash = false;
 
         opts.sourceMap = mapping.getUrl(fis.compile.settings.hash, fis.compile.settings.domain);
-        opts.outFile = file.getUrl(fis.compile.settings.hash, fis.compile.settings.domain);
+        file.release && (opts.outFile = file.getUrl(fis.compile.settings.hash, fis.compile.settings.domain));
     }
 
     var ret;
