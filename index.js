@@ -210,7 +210,6 @@ module.exports = function(content, file, conf){
 module.exports.defaultOptions = {
     outputStyle: 'nested',
     sourceMapContents: true,
-    sourceMap: true,
-    omitSourceMapUrl: false,
-    // sourceComments: true
+    sourceMap: false,
+    omitSourceMapUrl: false
 };
