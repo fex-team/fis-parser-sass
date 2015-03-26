@@ -151,7 +151,10 @@ module.exports = function(content, file, conf){
         if (file.cache) {
             file.cache.addDeps(target.realpath);
         }
-
+        //解决include_path 内import导致subpath为空报错问题
+        if(!target.subpath){
+            target.subpath = path.relative(root, target.realpath);
+        }
         ~sources.indexOf(target.subpath) || sources.push(target.subpath);
 
         done({
