@@ -132,14 +132,14 @@ module.exports = function(content, file, conf){
     var includePaths = opts.includePaths;
     var sources = [file.subpath];
     opts.importer = function(url, prev, done) {
-
+        var localPaths = includePaths.concat();
         var prevFile = find(prev, includePaths);
 
-        if (!prevFile) {
-            throw new Error('Error');
+        if (prevFile) {
+            localPaths.unshift(prevFile.dirname);
         }
 
-        var target = find(url, [prevFile.dirname].concat(includePaths));
+        var target = find(url, localPaths);
 
         if (!target) {
             throw new Error('Can\'t find `' + url +'` in `' + prev + '`');
