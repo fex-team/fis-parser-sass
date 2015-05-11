@@ -72,7 +72,7 @@ fis.config.set('settings.parser.sass', {
     @import "compass/layout/grid-background";
     
     a {
-        background: get-baseline-gradient($color:255);
+        background: get-baseline-gradient(rgba(255, 0, 0, 0));
         font-weight: bold;
         text-decoration: none;
         &:hover { text-decoration: underline; }
