@@ -129,6 +129,10 @@ module.exports = function(content, file, conf){
     opts.file = file.subpath;
     opts.data = content;
 
+    if (file.ext === '.sass') {
+        opts.indentedSyntax = true;
+    }
+
     var includePaths = opts.includePaths;
     var sources = [file.subpath];
     opts.importer = function(url, prev, done) {
