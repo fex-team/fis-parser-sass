@@ -67,7 +67,11 @@ function fixSourcePath(content, file) {
     // 处理，解决资源引用路径问题。
     content = fis.compile.extCss(content);
 
-    return content.replace(fis.compile.lang.reg, function(all, type, value) {
+    return content.replace(fis.compile.lang.reg, function(all, type, depth, value) {
+
+        if (parseFloat(fis.version, 10) < 3.0) {
+            value = depth;
+        }
 
         var info = fis.uri(value, file.dirname);
 
