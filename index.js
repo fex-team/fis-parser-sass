@@ -79,10 +79,6 @@ function fixSourcePath(content, file) {
             value = info.quote + info.file.subpath + info.query + info.quote;
         }
 
-        if (type === 'embed' || type === 'jsEmbed') {
-            value = fis.compile.lang[type].ld + value + fis.compile.lang[type].rd;
-        }
-
         return value;
     });
 }
