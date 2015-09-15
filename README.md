@@ -1,6 +1,8 @@
 fis-parser-sass
 ============================
 
+已停止更新，请移步至：https://github.com/fex-team/fis-parser-node-sass
+
 ## 安装与使用 
 
 全局安装
