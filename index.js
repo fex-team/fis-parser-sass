@@ -137,6 +137,7 @@ module.exports = function(content, file, conf){
     var stacks = [];
     var sources = [file.subpath];
     opts.importer = function(url, prev, done) {
+        prev = prev.replace(/^\w+\:/, ''); // windows 里面莫名加个盘符。
         var prevFile = find(prev, stacks.concat(includePaths));
 
         if (!prevFile) {
