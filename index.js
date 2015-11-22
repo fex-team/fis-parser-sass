@@ -147,13 +147,11 @@ module.exports = function(content, file, conf){
         var  dirname = prevFile.dirname;
 
         // 如果已经在里面
-        if (~stacks.indexOf(dirname)) {
-            while (stacks[0] !== dirname) {
-                stacks.shift();
-            }
-        } else {
-            stacks.unshift(dirname);
+        var idx = stacks.indexOf(dirname);
+        if (~idx) {
+            stacks.splice(idx, 1);
         }
+        stacks.unshift(dirname);
 
         var target = find(url, stacks.concat(includePaths));
 
