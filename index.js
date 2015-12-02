@@ -69,7 +69,8 @@ function fixSourcePath(content, file) {
 
     return content.replace(fis.compile.lang.reg, function(all, type, depth, value) {
 
-        if (parseFloat(fis.version, 10) < 3.0) {
+        // 判断是否为 fis2
+        if (!fis.match) {
             value = depth;
         }
 
