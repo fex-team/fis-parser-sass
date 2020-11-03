@@ -247,14 +247,14 @@ module.exports = function (content, file, conf) {
     // sourceMap = JSON.stringify(sourceMapObj, null, 4);
     // // -----------------------------------------------
 
-    mapping.setContent(ret.map);
+    mapping.setContent(ret.map.toString());
 
     file.extras = file.extras || {};
     file.extras.derived = file.extras.derived || [];
     file.extras.derived.push(mapping);
   }
 
-  return ret.css;
+  return ret.css.toString();
 };
 
 module.exports.defaultOptions = {
