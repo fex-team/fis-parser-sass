@@ -1,7 +1,7 @@
 {
   "name": "fis-parser-sass",
   "description": "A parser plugin for fis to compile sass file.",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "author": "FIS Team <fis@baidu.com>",
   "homepage": "http://fis.baidu.com/",
   "keywords": [
@@ -23,13 +23,6 @@
     "dev": "rm -rf debug && node ./node_modules/fis/bin/fis release -cf ./test/fixtures/basic/fis-conf.js -r ./test/fixtures/basic -d ./debug"
   },
   "dependencies": {
-    "sass": "1.30.0"
-  },
-  "devDependencies": {
-    "fis": "~1.9.2",
-    "fis-prepackager-derived": "0.0.2",
-    "istanbul": "~0.3.0",
-    "mocha": "~1.21.3",
-    "tmp": "0.0.24"
+    "sass": "1.39.2"
   }
 }
