@@ -80,7 +80,11 @@ function fixSourcePath(content, file) {
     var info = fis.uri(value, file.dirname);
 
     if (info.file && info.file.subpath) {
-      value = info.quote + info.file.subpath + info.query + info.quote;
+      if (type === 'embed') {
+        value = info.file.getContent();
+      } else {
+        value = info.quote + info.file.subpath + info.query + info.quote;
+      }
     }
 
     return value;
