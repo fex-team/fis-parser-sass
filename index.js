@@ -28,6 +28,8 @@ function resolve_and_load(filename, dir) {
   files.push(path.join(dirname, "_" + basename + ".sass"));
   files.push(path.join(dirname, basename + ".scss"));
   files.push(path.join(dirname, basename + ".sass"));
+  files.push(path.join(dirname, basename + '.css'));
+  files.push(path.join(dirname, basename + '.css'));
 
   var found = null;
 
